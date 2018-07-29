@@ -2,23 +2,22 @@ require 'uri'
 require 'net/http'
 require 'json'
 require 'engtagger'
+require 'ostruct'
 
-class Odapi
+class Request
   attr_reader :url
 
   def initialize(url)
     @url = url
   end
 
-  def request(argument)
-    uri = URI(url+"/#{argument}")
+  def call(argument)
+    uri = URI(url+"#{argument}")
     Net::HTTP.start(uri.host, uri.port,:use_ssl => uri.scheme == 'https') do |http|
       request = Net::HTTP::Get.new(uri)
-      request["app_id"] = '529efe09'
-      request["app_key"] = 'cbf2a51656df119c589ffa00ef559879'
       response = http.request(request)
-
       json_resp = JSON.parse(response.body)
+      OpenStruct.new(json_resp.first)
     rescue JSON::ParserError
       nil
     end
@@ -29,6 +28,7 @@ end
 
 puts "enter a sentence"
 text = gets.chomp
+request = Request.new("https://api.datamuse.com/words")
 
 3.times do |i|
 
@@ -36,25 +36,15 @@ text = gets.chomp
   tagged = tgr.add_tags(text)
   nouns = tgr.get_nouns(tagged)
 
-  odapi = Odapi.new("https://od-api.oxforddictionaries.com/api/v1/inflections/en")
-  nouns = nouns.keys.map do |n|
-    response = odapi.request(n)
-    if response
-      n = response["results"].first["lexicalEntries"].first["inflectionOf"].first["text"]
+  
+  nouns.keys.each do |word|
+
+    response = request.call("?sp=#{word}&md=d")
+    if response.respond_to?("defs")
+      definition = response.defs.first.tap do |r|
+        r.gsub!(/^[n]?/,"").gsub!(/^[adj]?{3}/,"").gsub!(/^[vbe]?{3}/,"").gsub!(/\t/, '')
+      end
     else
-      n
-    end
-  end
-
-
-  nouns.each do |word|
-    odapi = Odapi.new("https://od-api.oxforddictionaries.com/api/v1/entries/en")
-    request = odapi.request(word)
-
-    if request
-      definition = request["results"].first["lexicalEntries"].first["entries"].first["senses"].first["short_definitions"].first
-    else
-      #definition not found use current word as definition
       definition = word
     end
 
