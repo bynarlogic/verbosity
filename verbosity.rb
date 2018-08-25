@@ -34,11 +34,16 @@ module Verbosity
 
         qty.times do |i|
 
+          text.downcase!
+
           tgr = EngTagger.new
           tagged = tgr.add_tags(text)
           nouns = tgr.get_nouns(tagged)
 
-          
+          puts "nouns->"
+          puts nouns.inspect
+
+
           nouns.keys.each do |word|
 
             response = request.call("?sp=#{word}&md=d")
@@ -50,11 +55,18 @@ module Verbosity
               definition = word
             end
 
+            definition = remove_articles(definition)
+
             text.gsub!(word,definition)
           end
         end
 
         text
+    end
+
+
+    def remove_articles(text)
+      text.gsub(/\b[a]\b/," ").gsub(/\ban\b/," ").gsub(/\bthe\b/," ").gsub(/\s{2,}/," ")
     end
 
 end

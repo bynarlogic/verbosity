@@ -1,18 +1,21 @@
 import React, { Component } from 'react';
-import TextPad from './components/textpad'
-import './App.css';
+import TextPad from './textpad'
 
-class App extends Component {
+class Home extends Component {
+
   render() {
-    return (
+
+    return(
       <div className="App">
         <header className="App-header">
           <h1 className="App-title">Verbosity</h1>
         </header>
         <TextPad/>
       </div>
-    );
+    )
   }
+
+
 }
 
-export default App;
+export default Home
