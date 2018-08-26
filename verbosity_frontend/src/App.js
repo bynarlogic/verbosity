@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import Home from './components/home';
-import {BrowserRouter, Route} from 'react-router-dom';
+import TextPad from './components/textpad';
 import './App.css';
 
 class App extends Component {
   render() {
     return (
-        <BrowserRouter basename='/verbosity'>
-          <Home />
-        </BrowserRouter>
+      <div className="App">
+        <header className="App-header">
+          <h1 className="App-title">Verbosity</h1>
+        </header>
+        <TextPad/>
+      </div>
     );
   }
 }

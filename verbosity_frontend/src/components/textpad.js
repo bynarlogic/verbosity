@@ -13,14 +13,13 @@ class TextPad extends Component {
 
   }
 
-  render() {
-    var textDisplay = "Some Text";
-
+  componentDidUpdate() {
     if (this.state.pending_request) {
-      textDisplay = "pending..."
-    } else {
-      textDisplay = this.state.verbose
+      this.makeRequest()
     }
+  }
+
+  render() {
 
     return(
       <div>
@@ -33,7 +32,7 @@ class TextPad extends Component {
           />
         </form>
         <p>
-          {textDisplay}
+          {this.displayText()}
         </p>
         <button
           onClick={event => this.onVerboseClick(this.state.verbose_level)}
@@ -46,18 +45,30 @@ class TextPad extends Component {
 
   onVerboseClick(level) {
     level++
-    const URL = `http://${HOST}:4567/sentence/${this.state.sentence}/level/${this.state.verbose_level}`
     this.setState({verbose_level: level, pending_request: true})
-    axios.get(URL).then(response => this.setState({verbose: response.data, pending_request: false}) )
-    this.setState({sentence: this.state.sentence})
   }
 
   onInputChange(sentence) {
-    this.setState({verbose_level: 1})
-    const URL = `http://${HOST}:4567/sentence/${sentence}/level/${this.state.verbose_level}`
-    axios.get(URL).then(response => this.setState({verbose: response.data}) )
+    this.setState({verbose_level: 1,pending_request: true})
     this.setState({sentence})
   }
+
+  makeRequest() {
+    const URL = `http://${HOST}:4567/sentence/${this.state.sentence}/level/${this.state.verbose_level}`
+    axios.get(URL).then(response => this.setState({verbose: response.data, pending_request: false}) )
+  }
+
+  displayText() {
+    if (this.state.pending_request && this.state.sentence != "") {
+      return "pending..."
+    } else if(this.state.sentence != "" && !this.state.pending_request){
+      return this.state.verbose
+    } else {
+      return "A verbose version of this."
+    }
+  }
+
+
 }
 
 export default TextPad
