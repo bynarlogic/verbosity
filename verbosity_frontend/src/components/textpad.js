@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+const HOST = process.env.REACT_APP_HOST;
 
 
 class TextPad extends Component {
