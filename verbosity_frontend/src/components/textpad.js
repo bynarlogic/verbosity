@@ -45,7 +45,7 @@ class TextPad extends Component {
 
   onVerboseClick(level) {
     level++
-    const URL = `http://localhost:4567/sentence/${this.state.sentence}/level/${this.state.verbose_level}`
+    const URL = `http://${HOST}:4567/sentence/${this.state.sentence}/level/${this.state.verbose_level}`
     this.setState({verbose_level: level, pending_request: true})
     axios.get(URL).then(response => this.setState({verbose: response.data, pending_request: false}) )
     this.setState({sentence: this.state.sentence})
@@ -53,7 +53,7 @@ class TextPad extends Component {
 
   onInputChange(sentence) {
     this.setState({verbose_level: 1})
-    const URL = `http://localhost:4567/sentence/${sentence}/level/${this.state.verbose_level}`
+    const URL = `http://${HOST}:4567/sentence/${sentence}/level/${this.state.verbose_level}`
     axios.get(URL).then(response => this.setState({verbose: response.data}) )
     this.setState({sentence})
   }
