@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
  verbosity_frontend:
-   image: verbosity_frontend_dev
+   image: bynarlogic/verbosity_frontend
    command: yarn start
    ports: 
      - "3000:3000"

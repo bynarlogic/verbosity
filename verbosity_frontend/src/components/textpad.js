@@ -44,13 +44,19 @@ class TextPad extends Component {
   }
 
   onVerboseClick(level) {
-    level++
-    this.setState({verbose_level: level, pending_request: true})
+    if (level < 5) {
+      level++
+      this.setState({verbose_level: level, pending_request: true})
+    }
   }
 
   onInputChange(sentence) {
-    this.setState({verbose_level: 1,pending_request: true})
-    this.setState({sentence})
+    if (this.textTooLong(sentence)) {
+      this.setState({sentence: "Seed sentence must be 255 characters or less!"})
+    } else {
+      this.setState({verbose_level: 1,pending_request: true})
+      this.setState({sentence})
+    }
   }
 
   makeRequest() {
@@ -59,13 +65,17 @@ class TextPad extends Component {
   }
 
   displayText() {
-    if (this.state.pending_request && this.state.sentence != "") {
+    if (this.state.pending_request && this.state.sentence !== "") {
       return "pending..."
-    } else if(this.state.sentence != "" && !this.state.pending_request){
+    } else if(this.state.sentence !== "" && !this.state.pending_request){
       return this.state.verbose
     } else {
       return "A verbose version of this."
     }
+  }
+
+  textTooLong(text) {
+    return text.length > 255 ? true : false
   }
 
 
